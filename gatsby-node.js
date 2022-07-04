@@ -1,9 +1,34 @@
-exports.createPages = async ({ actions }) => {
+exports.createPages = async  ({ graphql,actions }) => {
   const { createPage } = actions
-  createPage({
-    path: "/using-dsg",
-    component: require.resolve("./src/templates/using-dsg.js"),
-    context: {},
-    defer: true,
-  })
-}
+
+  const response =await graphql(`
+  query MyQuery {
+    allContentfulBlogWebsite(sort: { fields: publishedOn, order: DESC }) {
+      edges {
+        node {
+          text {
+            raw
+          }
+          title {
+            title
+          }
+          images {
+            gatsbyImageData(width: 800)
+          }
+          slug
+        }
+      }
+    }
+  }`
+  
+  )
+const post =  response.data.allContentfulBlogWebsite.edges
+post.forEach(edge=>{
+    console.log(edge.node.slug)
+    createPage({
+      path: `/blog/${edge.node.slug}`,
+      component:require.resolve("./src/templates/blog-post.js"),
+      context:edge.node
+    
+    })
+  })}
