@@ -24,7 +24,6 @@ exports.createPages = async  ({ graphql,actions }) => {
   )
 const post =  response.data.allContentfulBlogWebsite.edges
 post.forEach(edge=>{
-    console.log(edge.node.slug)
     createPage({
       path: `/blog/${edge.node.slug}`,
       component:require.resolve("./src/templates/blog-post.js"),
